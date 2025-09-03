@@ -7,8 +7,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:tres_astronautas_app/src/presentation/widgets/_animated_blue_border_button.dart';
 import 'generic_appbar.dart';
+import '../utils/screen_helper.dart';
 
 class GenericLoading extends StatefulWidget {
   const GenericLoading({super.key, this.size = 420, this.message = 'Cargando, por favor espere...'});
@@ -56,43 +56,24 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
           backgroundColor: Colors.transparent,
           appBar: const GenericAppBar(),
           body: Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Texto "Cargando..."
-                  AnimatedBlueBorderButton(
-                    onPressed: null,
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    height: MediaQuery.of(context).size.width * 0.5,
-                    child: Center(
-                      child: Text(
-                        widget.message,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Color(0xFF004766), fontWeight: FontWeight.bold),
-                      ),
-                    ),
+            child: Builder(
+              builder: (context) {
+                final imageWidth = ScreenHelper.getResponsiveSize(context, mobile: 1, tablet: 0.8, desktop: 0.5);
+                return Padding(
+                  padding: const EdgeInsets.only(left: 25.0),
+                  // Animación de astronauta
+                  child: LottieBuilder.asset(
+                    GenericLoading._assetPath,
+                    controller: _controller,
+                    width: imageWidth,
+                    fit: BoxFit.contain,
+                    onLoaded: (composition) {
+                      _controller.duration = composition.duration;
+                      _controller.repeat();
+                    },
                   ),
-                  // Animación de carga
-                  Padding(
-                    padding: const EdgeInsets.only(left: 6.0),
-                    child: Center(
-                      child: LottieBuilder.asset(
-                        GenericLoading._assetPath,
-                        controller: _controller,
-                        fit: BoxFit.contain,
-                        onLoaded: (composition) {
-                          // Controlador de la animación
-                          _controller.duration = composition.duration;
-                          _controller.repeat();
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ),

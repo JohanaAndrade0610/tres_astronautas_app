@@ -182,7 +182,7 @@ class PlanetDetailScreen extends ConsumerWidget {
             currentIndex: 1,
             onTap: (index) {
               if (index == 0) {
-                context.go('/');
+                context.go('/home');
               } else if (index == 1) {
                 context.go('/planets');
               } else if (index == 2) {
