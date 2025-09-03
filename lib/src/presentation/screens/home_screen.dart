@@ -21,13 +21,17 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      // Fondo de la pantalla
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage('assets/images/background_home.png'), fit: BoxFit.cover),
-        ),
+      body: SizedBox.expand(
         child: Stack(
           children: [
+            // Imagen del astronauta
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/general_wallpaper.png',
+                fit: BoxFit.fitHeight,
+                alignment: Alignment.center,
+              ),
+            ),
             SafeArea(
               child: Column(
                 children: [
@@ -36,9 +40,9 @@ class HomeScreen extends ConsumerWidget {
                   // Botón "Ver Planetas"
                   Expanded(
                     child: Align(
-                      alignment: const Alignment(0, -0.39),
+                      alignment: const Alignment(0, -0.4),
                       child: AnimatedBlueBorderButton(
-                        width: 250,
+                        width: 200,
                         height: 50,
                         onPressed: () async {
                           // Indicador de carga

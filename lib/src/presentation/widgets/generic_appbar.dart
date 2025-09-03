@@ -30,7 +30,7 @@ class GenericAppBar extends StatelessWidget implements PreferredSizeWidget {
             Align(
               alignment: Alignment.centerLeft,
               child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+                icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF004766)),
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
             ),

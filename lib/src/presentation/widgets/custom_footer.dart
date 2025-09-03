@@ -50,9 +50,9 @@ class _FooterItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Color del icono del item
-    final iconColor = Colors.white;
+    final iconColor = Color(0xFF004766);
     // Color del texto del item
-    final textColor = Colors.white;
+    final textColor = Color(0xFF004766);
     return GestureDetector(
       onTap: onTap,
       child: Column(

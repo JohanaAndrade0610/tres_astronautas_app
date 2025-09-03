@@ -22,10 +22,7 @@ class NotFoundScreen extends StatelessWidget {
           children: [
             const Text('La página solicitada no existe.'),
             const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/planets'),
-              child: const Text('Ir al listado'),
-            ),
+            ElevatedButton(onPressed: () => context.go('/planets'), child: const Text('Ir al listado')),
           ],
         ),
       ),

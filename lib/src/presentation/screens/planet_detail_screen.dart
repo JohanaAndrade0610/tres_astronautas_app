@@ -45,7 +45,7 @@ class PlanetDetailScreen extends ConsumerWidget {
           return Stack(
             children: [
               // Fondo de la pantalla
-              Positioned.fill(child: Image.asset('assets/images/background_home.png', fit: BoxFit.cover)),
+              Positioned.fill(child: Image.asset('assets/images/general_wallpaper.png', fit: BoxFit.cover)),
               Scaffold(
                 backgroundColor: Colors.transparent,
                 // AppBar
@@ -94,8 +94,10 @@ class PlanetDetailScreen extends ConsumerWidget {
   Widget _buildDetailWithPlanet(BuildContext context, WidgetRef ref, Planet planet, AsyncValue<Set<String>> favs) {
     return Stack(
       children: [
-        // Fondo de la pantalla
-        Positioned.fill(child: Image.asset('assets/images/background_home.png', fit: BoxFit.cover)),
+        // Imagen del astronauta
+        Positioned.fill(
+          child: Image.asset('assets/images/general_wallpaper.png', fit: BoxFit.fitHeight, alignment: Alignment.center),
+        ),
         Scaffold(
           backgroundColor: Colors.transparent,
           // AppBar
@@ -154,11 +156,32 @@ class PlanetDetailScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Imagen del planeta
+                            // Imagen del planeta correspondiente
                             if (planet.imageUrl != null)
                               Center(
-                                child: ClipOval(
-                                  child: Image.network(planet.imageUrl!, width: 180, height: 180, fit: BoxFit.cover),
+                                child: LayoutBuilder(
+                                  builder: (ctx, ct) {
+                                    final w = MediaQuery.of(ctx).size.width;
+                                    final size = w < 420 ? 140.0 : (w < 800 ? 180.0 : 220.0);
+                                    return ClipOval(
+                                      child: Image.network(
+                                        planet.imageUrl!,
+                                        width: size,
+                                        height: size,
+                                        fit: BoxFit.cover,
+                                        loadingBuilder: (c, child, progress) {
+                                          if (progress == null) return child;
+                                          return Container(width: size, height: size, color: Colors.grey.shade300);
+                                        },
+                                        errorBuilder: (c, e, st) => Container(
+                                          width: size,
+                                          height: size,
+                                          color: Colors.grey.shade300,
+                                          child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                             const SizedBox(height: 12),
@@ -171,7 +194,9 @@ class PlanetDetailScreen extends ConsumerWidget {
                             // Masa del planeta
                             Text('Masa: ${planet.massKg ?? 'Desconocida'}'),
                             // Distancia orbital del planeta
-                            Text('Distancia orbital: ${planet.orbitalDistanceKm?.toStringAsFixed(0) ?? 'Desconocida'} km'),
+                            Text(
+                              'Distancia orbital: ${planet.orbitalDistanceKm?.toStringAsFixed(0) ?? 'Desconocida'} km',
+                            ),
                             // Número de lunas del planeta
                             Text('Lunas: ${planet.moons}'),
                           ],

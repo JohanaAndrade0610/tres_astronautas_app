@@ -59,8 +59,14 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
 
     return Stack(
       children: [
-        // Fondo de la pantalla
-        Positioned.fill(child: Image.asset('assets/images/background_home.png', fit: BoxFit.cover)),
+        // Imagen del astronauta
+        Positioned.fill(
+          child: Image.asset(
+            'assets/images/general_wallpaper.png',
+            fit: BoxFit.fitHeight,
+            alignment: Alignment.center,
+          ),
+        ),
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: const GenericAppBar(),
@@ -184,10 +190,25 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                                 ),
                                 // Imagen del planeta
                                 leading: (p.imageUrl != null)
-                                    ? ClipOval(
-                                        child: Image.network(p.imageUrl!, width: 55, height: 55, fit: BoxFit.cover),
+                                    ? SizedBox(
+                                        width: 56,
+                                        height: 56,
+                                        child: ClipOval(
+                                          child: Image.network(
+                                            p.imageUrl!,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (ctx, child, loadingProgress) {
+                                              if (loadingProgress == null) return child;
+                                              return Container(color: Colors.grey.shade300);
+                                            },
+                                            errorBuilder: (ctx, error, stack) => Container(
+                                              color: Colors.grey.shade300,
+                                              child: const Icon(Icons.broken_image, color: Colors.black45),
+                                            ),
+                                          ),
+                                        ),
                                       )
-                                    : null,
+                                    : SizedBox(width: 56, height: 56),
                                 onTap: () async {
                                   // Mostrar loading y pre-cargar datos del planeta seleccionado
                                   final navigator = Navigator.of(context);

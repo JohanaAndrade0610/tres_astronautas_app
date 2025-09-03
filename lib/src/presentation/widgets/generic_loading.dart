@@ -28,7 +28,7 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
   // Controlador de la animación
   late final AnimationController _controller;
 
-/*
+  /*
  * @method initState
  * @description Método encargado de inicializar el estado de la ventana de carga.
  */
@@ -38,7 +38,7 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
     _controller = AnimationController(vsync: this);
   }
 
-/*
+  /*
  * @method dispose
  * @description Método encargado de liberar los recursos utilizados por la ventana de carga.
  */
@@ -52,8 +52,6 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fondo de la pantalla de la ventana de carga
-        Positioned.fill(child: Image.asset('assets/images/background_loading.png', fit: BoxFit.cover)),
         Scaffold(
           backgroundColor: Colors.transparent,
           appBar: const GenericAppBar(),
@@ -67,8 +65,8 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
                   // Texto "Cargando..."
                   AnimatedBlueBorderButton(
                     onPressed: null,
-                    width: 300,
-                    height: 50,
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    height: MediaQuery.of(context).size.width * 0.5,
                     child: Center(
                       child: Text(
                         widget.message,
