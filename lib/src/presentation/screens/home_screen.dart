@@ -7,15 +7,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:tres_astronautas_app/src/presentation/widgets/generic_appbar.dart';
+import 'package:tres_astronautas_app/src/presentation/widgets/generic_loading.dart';
 import '../widgets/custom_footer.dart';
 import '../widgets/_animated_blue_border_button.dart';
+import '../../providers/providers.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       // Fondo de la pantalla
@@ -35,7 +38,34 @@ class HomeScreen extends StatelessWidget {
                     child: Align(
                       alignment: const Alignment(0, -0.39),
                       child: AnimatedBlueBorderButton(
-                        onPressed: () => context.push('/planets'),
+                        width: 250,
+                        height: 50,
+                        onPressed: () async {
+                          // Indicador de carga
+                          final navigator = Navigator.of(context);
+                          navigator.push(
+                            MaterialPageRoute(
+                              builder: (_) => const GenericLoading(message: 'Cargando planetas, por favor espere...'),
+                            ),
+                          );
+                          final start = DateTime.now();
+                          try {
+                            // Forzar la carga del provider y esperar a que finalice
+                            // ignore: unused_result
+                            await ref.refresh(planetsListProvider.future);
+                            // Asegurar tiempo mínimo de 2s para mostrar la animación
+                            final elapsed = DateTime.now().difference(start);
+                            final remaining = Duration(seconds: 2) - elapsed;
+                            if (remaining > Duration.zero) await Future.delayed(remaining);
+                            navigator.pop();
+                            context.push('/planets');
+                          } catch (e) {
+                            navigator.pop();
+                            ScaffoldMessenger.of(
+                              context,
+                            ).showSnackBar(SnackBar(content: Text('Error cargando planetas: $e')));
+                          }
+                        },
                         child: const Text(
                           'Ver Planetas',
                           style: TextStyle(color: Color(0xFF004766), fontWeight: FontWeight.bold),

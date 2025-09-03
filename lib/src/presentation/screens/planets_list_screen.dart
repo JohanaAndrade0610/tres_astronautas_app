@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/custom_footer.dart';
 import '../widgets/generic_appbar.dart';
+import '../widgets/generic_loading.dart';
 import '../../providers/providers.dart';
 
 class PlanetsListScreen extends ConsumerStatefulWidget {
@@ -187,7 +188,33 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                                         child: Image.network(p.imageUrl!, width: 55, height: 55, fit: BoxFit.cover),
                                       )
                                     : null,
-                                onTap: () => context.push('/planets/${Uri.encodeComponent(p.id)}'),
+                                onTap: () async {
+                                  // Mostrar loading y pre-cargar datos del planeta seleccionado
+                                  final navigator = Navigator.of(context);
+                                  final start = DateTime.now();
+                                  navigator.push(
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const GenericLoading(message: 'Cargando información, por favor espere...'),
+                                    ),
+                                  );
+                                  try {
+                                    final repo = ref.read(planetRepositoryProvider);
+                                    final planet = await repo.getPlanet(p.id);
+                                    // Asegurar mínimo 2s de visualización del loading
+                                    final elapsed = DateTime.now().difference(start);
+                                    final remaining = Duration(seconds: 2) - elapsed;
+                                    if (remaining > Duration.zero) await Future.delayed(remaining);
+                                    navigator.pop();
+                                    // Navegar pasando el id; PlanetDetailScreen ahora puede aceptar initial data
+                                    context.push('/planets/${Uri.encodeComponent(p.id)}', extra: planet);
+                                  } catch (e) {
+                                    navigator.pop();
+                                    ScaffoldMessenger.of(
+                                      context,
+                                    ).showSnackBar(SnackBar(content: Text('Error cargando planeta: $e')));
+                                  }
+                                },
                               ),
                             ),
                           );

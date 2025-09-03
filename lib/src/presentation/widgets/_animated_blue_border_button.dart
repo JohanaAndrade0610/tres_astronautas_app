@@ -11,8 +11,18 @@ class AnimatedBlueBorderButton extends StatefulWidget {
   // Contenido del botón
   final Widget child;
   // Acción del botón
-  final VoidCallback onPressed;
-  const AnimatedBlueBorderButton({required this.child, required this.onPressed, Key? key}) : super(key: key);
+  final VoidCallback? onPressed;
+  // Ancho del botón
+  final double width;
+  // Alto del botón
+  final double height;
+  const AnimatedBlueBorderButton({
+    required this.child,
+    this.onPressed,
+    this.width = 200,
+    this.height = 50,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<AnimatedBlueBorderButton> createState() => AnimatedBlueBorderButtonState();
@@ -37,15 +47,15 @@ class AnimatedBlueBorderButtonState extends State<AnimatedBlueBorderButton> with
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200,
-      height: 50,
+      width: widget.width,
+      height: widget.height,
       child: Stack(
         alignment: Alignment.center,
         children: [
           // Aura arcoíris difusa
           Container(
-            width: 200,
-            height: 50,
+            width: widget.width,
+            height: widget.height,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
@@ -68,10 +78,14 @@ class AnimatedBlueBorderButtonState extends State<AnimatedBlueBorderButton> with
             alignment: Alignment.center,
             child: widget.child,
           ),
-          // Overlay para el efecto de toque
-          Material(
-            color: Colors.transparent,
-            child: InkWell(borderRadius: BorderRadius.circular(24), onTap: widget.onPressed, child: Container()),
+          // Overlay eliminado: no hay efecto visual al presionar
+          GestureDetector(
+            onTap: widget.onPressed,
+            behavior: HitTestBehavior.translucent,
+            child: Container(
+              width: widget.width,
+              height: widget.height,
+            ),
           ),
         ],
       ),

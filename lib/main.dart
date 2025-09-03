@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'src/presentation/screens/home_screen.dart';
 import 'src/presentation/screens/planets_list_screen.dart';
 import 'src/presentation/screens/planet_detail_screen.dart';
+import 'src/domain/entities/planet.dart';
 import 'src/presentation/screens/not_found_screen.dart';
 
 void main() {
@@ -32,7 +33,9 @@ class App extends ConsumerWidget {
           path: '/planets/:id',
           builder: (c, s) {
             final id = s.pathParameters['id'] ?? '';
-            return PlanetDetailScreen(id: Uri.decodeComponent(id));
+            final extra = s.extra;
+            final Planet? initialPlanet = extra is Planet ? extra : null;
+            return PlanetDetailScreen(id: Uri.decodeComponent(id), initialPlanet: initialPlanet);
           },
         ),
       ],
