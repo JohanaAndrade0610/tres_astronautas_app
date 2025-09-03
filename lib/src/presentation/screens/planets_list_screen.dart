@@ -228,7 +228,7 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                                     if (remaining > Duration.zero) await Future.delayed(remaining);
                                     navigator.pop();
                                     // Navegar pasando el id; PlanetDetailScreen ahora puede aceptar initial data
-                                    context.push('/planets/${Uri.encodeComponent(p.id)}', extra: planet);
+                                    context.go('/planets/${Uri.encodeComponent(p.id)}', extra: planet);
                                   } catch (e) {
                                     navigator.pop();
                                     ScaffoldMessenger.of(
@@ -254,7 +254,7 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
             currentIndex: 1,
             onTap: (index) {
               if (index == 0) {
-                context.go('/');
+                context.go('/home');
               } else if (index == 1) {
                 // Ya está en Planets
               } else if (index == 2) {

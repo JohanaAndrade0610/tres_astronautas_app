@@ -62,7 +62,7 @@ class HomeScreen extends ConsumerWidget {
                             final remaining = Duration(seconds: 2) - elapsed;
                             if (remaining > Duration.zero) await Future.delayed(remaining);
                             navigator.pop();
-                            context.push('/planets');
+                            context.go('/planets');
                           } catch (e) {
                             navigator.pop();
                             ScaffoldMessenger.of(

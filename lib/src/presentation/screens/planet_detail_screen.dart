@@ -42,44 +42,13 @@ class PlanetDetailScreen extends ConsumerWidget {
           );
         }
         if (snapshot.hasError) {
-          return Stack(
-            children: [
-              // Fondo de la pantalla
-              Positioned.fill(child: Image.asset('assets/images/general_wallpaper.png', fit: BoxFit.cover)),
-              Scaffold(
-                backgroundColor: Colors.transparent,
-                // AppBar
-                appBar: const GenericAppBar(),
-                body: Center(
-                  // Mensaje de error en caso de que no se encuentre el planeta
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('El planeta no existe'),
-                      AnimatedBlueBorderButton(
-                        onPressed: () => context.go('/planets'),
-                        child: const Text(
-                          'Volver al listado',
-                          style: TextStyle(color: Color(0xFF004766), fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                bottomNavigationBar: CustomFooter(
-                  currentIndex: 1,
-                  onTap: (index) {
-                    if (index == 0) {
-                      context.go('/');
-                    } else if (index == 1) {
-                      context.go('/planets');
-                    } else if (index == 2) {
-                      context.go('/favorites');
-                    }
-                  },
-                ),
-              ),
-            ],
+          // Si hubo algún problema al obtener la información de un planeta se dirige al usuario a la pantalla de no encontrado.
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.go('/not-found');
+          });
+          return const Scaffold(
+            backgroundColor: Colors.transparent,
+            body: Center(child: SizedBox.shrink()),
           );
         }
         // Planeta encontrado
