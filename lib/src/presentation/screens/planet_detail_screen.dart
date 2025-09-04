@@ -8,11 +8,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/services.dart';
 import '../widgets/custom_footer.dart';
 import '../widgets/generic_appbar.dart';
 import '../widgets/_animated_blue_border_button.dart';
 import '../../providers/providers.dart';
 import '../../domain/entities/planet.dart';
+import '../utils/screen_helper.dart';
+
+/*
+ * @method _assetExists
+ * @description Método encargado de verificar si la imagen del planeta existe en el bundle.
+ */
+Future<bool> _assetExists(String assetPath) async {
+  try {
+    await rootBundle.load(assetPath);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 
 class PlanetDetailScreen extends ConsumerWidget {
   // ID del planeta
@@ -125,34 +140,64 @@ class PlanetDetailScreen extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Imagen del planeta correspondiente
-                            if (planet.imageUrl != null)
-                              Center(
-                                child: LayoutBuilder(
-                                  builder: (ctx, ct) {
-                                    final w = MediaQuery.of(ctx).size.width;
-                                    final size = w < 420 ? 140.0 : (w < 800 ? 180.0 : 220.0);
-                                    return ClipOval(
-                                      child: Image.network(
-                                        planet.imageUrl!,
-                                        width: size,
-                                        height: size,
-                                        fit: BoxFit.cover,
-                                        loadingBuilder: (c, child, progress) {
-                                          if (progress == null) return child;
-                                          return Container(width: size, height: size, color: Colors.grey.shade300);
-                                        },
-                                        errorBuilder: (c, e, st) => Container(
-                                          width: size,
-                                          height: size,
-                                          color: Colors.grey.shade300,
-                                          child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
+                            // Imagen del planeta correspondiente: priorizar asset local si existe, sino usar imageUrl
+                            Center(
+                              child: LayoutBuilder(
+                                builder: (ctx, ct) {
+                                  final size = ScreenHelper.getResponsiveSize(
+                                    ctx,
+                                    mobile: 0.4,
+                                    tablet: 0.225,
+                                    desktop: 0.1,
+                                  );
+                                  final assetPath = 'assets/images/planets/${planet.name.toLowerCase()}.png';
+                                  return ClipOval(
+                                    child: FutureBuilder<bool>(
+                                      future: _assetExists(assetPath),
+                                      builder: (c, snap) {
+                                        // Si la imagen existe en la carpeta de assets se utiliza esa imagen
+                                        if (snap.connectionState == ConnectionState.done && snap.data == true) {
+                                          return Image.asset(
+                                            assetPath,
+                                            width: size,
+                                            height: size,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (c, e, st) => Container(
+                                              width: size,
+                                              height: size,
+                                              color: Colors.grey.shade300,
+                                              child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
+                                            ),
+                                          );
+                                        }
+                                        // Si la imagen no existe en la carpeta de assets se utiliza la URL de la imagen
+                                        if (snap.connectionState == ConnectionState.done &&
+                                            (planet.imageUrl != null && planet.imageUrl!.isNotEmpty)) {
+                                          return Image.network(
+                                            planet.imageUrl!,
+                                            width: size,
+                                            height: size,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (c, child, progress) {
+                                              if (progress == null) return child;
+                                              return Container(width: size, height: size, color: Colors.grey.shade300);
+                                            },
+                                            // Si la imagen no existe en la carpeta ni tiene una URL se muestra un icono de imagen rota
+                                            errorBuilder: (c, e, st) => Container(
+                                              width: size,
+                                              height: size,
+                                              color: Colors.grey.shade300,
+                                              child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
+                                            ),
+                                          );
+                                        }
+                                        return Container(width: size, height: size, color: Colors.grey.shade300);
+                                      },
+                                    ),
+                                  );
+                                },
                               ),
+                            ),
                             const SizedBox(height: 12),
                             // Nombre del planeta
                             Text('${planet.name}', style: Theme.of(context).textTheme.titleLarge),

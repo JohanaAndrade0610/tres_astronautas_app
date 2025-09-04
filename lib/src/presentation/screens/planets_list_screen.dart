@@ -6,6 +6,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/custom_footer.dart';
@@ -53,6 +54,19 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
     return TextSpan(children: children, style: normalStyle);
   }
 
+  /*
+   * @method _assetExists
+   * @description Método encargado de verificar si la imagen del planeta existe en el bundle.
+   */
+  Future<bool> _assetExists(String assetPath) async {
+    try {
+      await rootBundle.load(assetPath);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final asyncPlanets = ref.watch(planetsListProvider);
@@ -61,11 +75,7 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
       children: [
         // Imagen del astronauta
         Positioned.fill(
-          child: Image.asset(
-            'assets/images/general_wallpaper.png',
-            fit: BoxFit.fitHeight,
-            alignment: Alignment.center,
-          ),
+          child: Image.asset('assets/images/general_wallpaper.png', fit: BoxFit.fitHeight, alignment: Alignment.center),
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -189,26 +199,38 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                                   ),
                                 ),
                                 // Imagen del planeta
-                                leading: (p.imageUrl != null)
-                                    ? SizedBox(
-                                        width: 56,
-                                        height: 56,
-                                        child: ClipOval(
-                                          child: Image.network(
-                                            p.imageUrl!,
-                                            fit: BoxFit.cover,
-                                            loadingBuilder: (ctx, child, loadingProgress) {
-                                              if (loadingProgress == null) return child;
-                                              return Container(color: Colors.grey.shade300);
-                                            },
-                                            errorBuilder: (ctx, error, stack) => Container(
-                                              color: Colors.grey.shade300,
-                                              child: const Icon(Icons.broken_image, color: Colors.black45),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    : SizedBox(width: 56, height: 56),
+                                leading: FutureBuilder<bool>(
+                                  future: _assetExists('assets/images/planets/${p.name.toLowerCase()}.png'),
+                                  builder: (context, snapshot) {
+                                    final assetPath = 'assets/images/planets/${p.name.toLowerCase()}.png';
+                                    // Si la imagen existe en la carpeta de assets se utiliza esa imagen
+                                    if (snapshot.connectionState == ConnectionState.done && snapshot.data == true) {
+                                      return CircleAvatar(
+                                        radius: 28,
+                                        backgroundColor: Colors.grey.shade300,
+                                        backgroundImage: AssetImage(assetPath),
+                                      );
+                                    }
+                                    // Si la imagen no existe en la carpeta de assets se utiliza la URL de la imagen
+                                    else if (p.imageUrl != null && p.imageUrl!.isNotEmpty) {
+                                      return CircleAvatar(
+                                        radius: 28,
+                                        backgroundColor: Colors.grey.shade300,
+                                        backgroundImage: NetworkImage(p.imageUrl!),
+                                        onBackgroundImageError: (_, __) =>
+                                            const Icon(Icons.broken_image, color: Colors.black45),
+                                      );
+                                    }
+                                    // Si la imagen no existe en la carpeta ni tiene una URL se muestra un icono de imagen rota
+                                    else {
+                                      return const CircleAvatar(
+                                        radius: 28,
+                                        backgroundColor: Colors.grey,
+                                        child: Icon(Icons.broken_image, color: Colors.black45),
+                                      );
+                                    }
+                                  },
+                                ),
                                 onTap: () async {
                                   // Mostrar loading y pre-cargar datos del planeta seleccionado
                                   final navigator = Navigator.of(context);
