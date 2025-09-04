@@ -54,11 +54,10 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
       children: [
         Scaffold(
           backgroundColor: Colors.white,
-          appBar: const GenericAppBar(),
           body: Center(
             child: Builder(
               builder: (context) {
-                final imageWidth = ScreenHelper.getResponsiveSize(context, mobile: 1, tablet: 0.8, desktop: 0.5);
+                final imageWidth = ScreenHelper.getResponsiveSize(context, mobile: 1, tablet: 0.8, desktop: 0.4);
                 return Padding(
                   padding: const EdgeInsets.only(left: 25.0),
                   // Animación de astronauta

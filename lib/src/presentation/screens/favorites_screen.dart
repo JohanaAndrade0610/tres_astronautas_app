@@ -27,7 +27,7 @@ class FavoritesScreen extends ConsumerWidget {
       children: [
         // Fondo de pantalla
         Positioned.fill(
-          child: Image.asset('assets/images/general_wallpaper.png', fit: BoxFit.fitHeight, alignment: Alignment.center),
+          child: Image.asset('assets/images/general_wallpaper2.png', fit: BoxFit.fitHeight, alignment: Alignment.center),
         ),
         Scaffold(
           backgroundColor: Colors.transparent,

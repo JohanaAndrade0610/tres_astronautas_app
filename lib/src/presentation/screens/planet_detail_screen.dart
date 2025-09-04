@@ -11,7 +11,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/services.dart';
 import '../widgets/custom_footer.dart';
 import '../widgets/generic_appbar.dart';
-import '../widgets/_animated_blue_border_button.dart';
 import '../../providers/providers.dart';
 import '../../domain/entities/planet.dart';
 import '../utils/screen_helper.dart';
@@ -43,7 +42,7 @@ class PlanetDetailScreen extends ConsumerWidget {
     // Se valida si se proporciona initialPlanet
     if (initialPlanet != null) {
       final planet = initialPlanet!;
-      final favs = ref.watch(favoritesProvider);
+      final favs = ref.read(favoritesProvider);
       return _buildDetailWithPlanet(context, ref, planet, favs);
     }
 
@@ -80,7 +79,12 @@ class PlanetDetailScreen extends ConsumerWidget {
       children: [
         // Imagen del astronauta
         Positioned.fill(
-          child: Image.asset('assets/images/general_wallpaper.png', fit: BoxFit.fitHeight, alignment: Alignment.center),
+          child: Image.asset(
+            'assets/images/general_wallpaper2.png',
+            fit: BoxFit.fitHeight,
+            alignment: Alignment.center,
+            gaplessPlayback: true,
+          ),
         ),
         Scaffold(
           backgroundColor: Colors.transparent,
@@ -93,113 +97,108 @@ class PlanetDetailScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    favs.when(
-                      data: (s) => Center(
-                        // Botón para agregar o quitar Planetas de la lista de favoritos
-                        child: AnimatedBlueBorderButton(
-                          onPressed: () async {
-                            // Petición para agregar o quitar de favoritos un planeta
-                            try {
-                              final wasFavorite = s.contains(planet.id);
-                              await ref.read(favoritesProvider.notifier).toggle(planet.id);
-                              final message = wasFavorite ? 'Eliminado de favoritos' : 'Agregado a favoritos';
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-                            } catch (e) {
-                              ScaffoldMessenger.of(
-                                context,
-                              ).showSnackBar(SnackBar(content: Text('Error actualizando favorito: $e')));
-                            }
-                          },
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // Icono de favorito
-                              Icon(
-                                s.contains(planet.id) ? Icons.favorite : Icons.favorite_border,
-                                color: s.contains(planet.id) ? Colors.red : const Color(0xFF004766),
-                              ),
-                              const SizedBox(width: 8),
-                              // Texto del botón
-                              Text(
-                                s.contains(planet.id) ? 'Quitar de favoritos' : 'Agregar a favoritos',
-                                style: const TextStyle(color: Color(0xFF004766), fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      loading: () => const Center(child: CircularProgressIndicator()), // Indicador de carga
-                      error: (e, st) => const SizedBox(),
-                    ),
-                    SizedBox(height: 24),
+                    // Card con la información del planeta
                     Card(
                       color: const Color(0xFFE0E2EF).withOpacity(0.7),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 22.0, bottom: 22.0, left: 28.0, right: 28.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Imagen del planeta correspondiente: priorizar asset local si existe, sino usar imageUrl
-                            Center(
-                              child: LayoutBuilder(
-                                builder: (ctx, ct) {
-                                  final size = ScreenHelper.getResponsiveSize(
-                                    ctx,
-                                    mobile: 0.4,
-                                    tablet: 0.225,
-                                    desktop: 0.1,
-                                  );
-                                  final assetPath = 'assets/images/planets/${planet.name.toLowerCase()}.png';
-                                  return ClipOval(
-                                    child: FutureBuilder<bool>(
-                                      future: _assetExists(assetPath),
-                                      builder: (c, snap) {
-                                        // Si la imagen existe en la carpeta de assets se utiliza esa imagen
-                                        if (snap.connectionState == ConnectionState.done && snap.data == true) {
-                                          return Image.asset(
-                                            assetPath,
-                                            width: size,
-                                            height: size,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (c, e, st) => Container(
+                      child: Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 22.0, bottom: 22.0, left: 28.0, right: 28.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Center(
+                                  child: LayoutBuilder(
+                                    builder: (ctx, ct) {
+                                      final size = ScreenHelper.getResponsiveSize(
+                                        ctx,
+                                        mobile: 0.4,
+                                        tablet: 0.225,
+                                        desktop: 0.1,
+                                      );
+                                      final assetPath = 'assets/images/planets/${planet.name.toLowerCase()}.png';
+                                      return ClipOval(
+                                        child: FutureBuilder<bool>(
+                                          future: _assetExists(assetPath),
+                                          builder: (c, snap) {
+                                            if (snap.connectionState == ConnectionState.done && snap.data == true) {
+                                              return Image.asset(
+                                                assetPath,
+                                                width: size,
+                                                height: size,
+                                                fit: BoxFit.cover,
+                                                gaplessPlayback: true,
+                                                errorBuilder: (c, e, st) => Container(
+                                                  width: size,
+                                                  height: size,
+                                                  color: Colors.grey.shade300,
+                                                  child: Icon(
+                                                    Icons.broken_image,
+                                                    color: Colors.black45,
+                                                    size: size * 0.4,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                            return Container(
                                               width: size,
                                               height: size,
                                               color: Colors.grey.shade300,
                                               child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
-                                            ),
-                                          );
-                                        }
-                                        // Si la imagen no existe en assets, mostrar un icono de imagen rota
-                                        return Container(
-                                          width: size,
-                                          height: size,
-                                          color: Colors.grey.shade300,
-                                          child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                // Nombre del planeta en negrita
+                                Text(
+                                  '${planet.name}',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                if (planet.description != null) const SizedBox(height: 12),
+                                // Descripción del planeta
+                                Text(planet.description!, textAlign: TextAlign.justify),
+                                const SizedBox(height: 12),
+                                // Masa del planeta en negrita
+                                RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                    children: [
+                                      const TextSpan(text: 'Masa: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                                      TextSpan(text: '${planet.massKg ?? 'Desconocida'}', style: const TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                                // Distancia orbital en negrita
+                                RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                    children: [
+                                      const TextSpan(text: 'Distancia orbital: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                                      TextSpan(text: '${planet.orbitalDistanceKm?.toStringAsFixed(0) ?? 'Desconocida'} km', style: const TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                                // Lunas en negrita
+                                RichText(
+                                  text: TextSpan(
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                    children: [
+                                      const TextSpan(text: 'Lunas: ', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                                      TextSpan(text: '${planet.moons}', style: const TextStyle(color: Colors.black)),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 12),
-                            // Nombre del planeta
-                            Text('${planet.name}', style: Theme.of(context).textTheme.titleLarge),
-                            // Descripción del planeta
-                            if (planet.description != null) const SizedBox(height: 12),
-                            Text(planet.description!, textAlign: TextAlign.justify),
-                            const SizedBox(height: 12),
-                            // Masa del planeta
-                            Text('Masa: ${planet.massKg ?? 'Desconocida'}'),
-                            // Distancia orbital del planeta
-                            Text(
-                              'Distancia orbital: ${planet.orbitalDistanceKm?.toStringAsFixed(0) ?? 'Desconocida'} km',
-                            ),
-                            // Número de lunas del planeta
-                            Text('Lunas: ${planet.moons}'),
-                          ],
-                        ),
+                          ),
+                          // Botón de favoritos aislado en su propio ConsumerWidget para que solo él se reconstruya
+                          Positioned(bottom: 16, right: 16, child: _FavoriteButton(planetId: planet.id)),
+                        ],
                       ),
                     ),
                   ],
@@ -222,6 +221,56 @@ class PlanetDetailScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// Widget de favoritos
+class _FavoriteButton extends ConsumerWidget {
+  final String planetId;
+  const _FavoriteButton({required this.planetId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favs = ref.watch(favoritesProvider);
+    // Obtener deviceType localmente
+    final deviceType = ScreenHelper.getDeviceType(context);
+
+    return favs.when(
+      data: (s) {
+        final isFavorite = s.contains(planetId);
+        return ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            elevation: 2,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            padding: deviceType == DeviceType.mobile
+                ? const EdgeInsets.all(12)
+                : const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          ),
+          icon: Icon(
+            isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: isFavorite ? Colors.red : const Color(0xFF004766),
+          ),
+          label: deviceType == DeviceType.mobile
+              ? const SizedBox.shrink()
+              : Text(
+                  isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos',
+                  style: const TextStyle(color: Color(0xFF004766), fontWeight: FontWeight.bold),
+                ),
+          onPressed: () async {
+            try {
+              await ref.read(favoritesProvider.notifier).toggle(planetId);
+              final message = isFavorite ? 'Eliminado de favoritos' : 'Agregado a favoritos';
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error actualizando favorito: $e')));
+            }
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => const SizedBox(),
     );
   }
 }

@@ -106,7 +106,7 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                   child: asyncPlanets.when(
                     data: (list) {
                       final filtered = list.where((p) {
-                        final combined = '${p.name} ${p.massKg} ${p.orbitalDistanceKm?.toStringAsFixed(0)}'
+                        final combined = '${p.name} ${p.massKg} ${p.orbitalDistanceKm?.toStringAsFixed(0)} ${p.moons}'
                             .toLowerCase();
                         return combined.contains(filter);
                       }).toList();
