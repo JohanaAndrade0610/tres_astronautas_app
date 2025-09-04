@@ -76,7 +76,7 @@ Aplicación Flutter para la gestión y visualización de la información de los 
 
 ## URL de la aplicación desplegada
 
-> [Agrega aquí la URL de Firebase Hosting cuando completes el despliegue]
+https://tres-astronautas-app.web.app
 
 ## Autor
 
