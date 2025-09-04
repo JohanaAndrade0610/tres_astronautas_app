@@ -53,7 +53,7 @@ class _GenericLoadingState extends State<GenericLoading> with SingleTickerProvid
     return Stack(
       children: [
         Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: Colors.white,
           appBar: const GenericAppBar(),
           body: Center(
             child: Builder(

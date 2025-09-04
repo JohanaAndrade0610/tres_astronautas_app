@@ -88,7 +88,7 @@ class PlanetDetailScreen extends ConsumerWidget {
           appBar: const GenericAppBar(showBackArrow: true),
           body: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

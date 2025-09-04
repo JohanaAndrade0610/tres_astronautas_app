@@ -6,6 +6,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class GenericAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackArrow;
@@ -27,11 +28,21 @@ class GenericAppBar extends StatelessWidget implements PreferredSizeWidget {
           Image.asset('assets/images/three_astronauts_logo.png', height: 36),
           // Flecha de retroceso alineada a la izquierda (solo si showBackArrow = true)
           if (showBackArrow)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF004766)),
-                onPressed: () => Navigator.of(context).maybePop(),
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF004766)),
+                  onPressed: () {
+                    // Navegación hacia la ventana anterior
+                    if (Navigator.of(context).canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/planets');
+                    }
+                  },
+                ),
               ),
             ),
         ],

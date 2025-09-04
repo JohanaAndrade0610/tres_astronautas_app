@@ -115,10 +115,10 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                         itemBuilder: (context, i) {
                           final p = filtered[i];
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 5.0),
                             // Card de cada planeta
                             child: Card(
-                              color: const Color(0xFFE0E2EF).withOpacity(0.7),
+                              color: const Color(0xFFE0E2EF).withOpacity(0.8),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                               // Nombre del planeta
                               child: ListTile(
