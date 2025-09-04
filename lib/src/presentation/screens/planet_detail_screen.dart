@@ -170,28 +170,13 @@ class PlanetDetailScreen extends ConsumerWidget {
                                             ),
                                           );
                                         }
-                                        // Si la imagen no existe en la carpeta de assets se utiliza la URL de la imagen
-                                        if (snap.connectionState == ConnectionState.done &&
-                                            (planet.imageUrl != null && planet.imageUrl!.isNotEmpty)) {
-                                          return Image.network(
-                                            planet.imageUrl!,
-                                            width: size,
-                                            height: size,
-                                            fit: BoxFit.cover,
-                                            loadingBuilder: (c, child, progress) {
-                                              if (progress == null) return child;
-                                              return Container(width: size, height: size, color: Colors.grey.shade300);
-                                            },
-                                            // Si la imagen no existe en la carpeta ni tiene una URL se muestra un icono de imagen rota
-                                            errorBuilder: (c, e, st) => Container(
-                                              width: size,
-                                              height: size,
-                                              color: Colors.grey.shade300,
-                                              child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
-                                            ),
-                                          );
-                                        }
-                                        return Container(width: size, height: size, color: Colors.grey.shade300);
+                                        // Si la imagen no existe en assets, mostrar un icono de imagen rota
+                                        return Container(
+                                          width: size,
+                                          height: size,
+                                          color: Colors.grey.shade300,
+                                          child: Icon(Icons.broken_image, color: Colors.black45, size: size * 0.4),
+                                        );
                                       },
                                     ),
                                   );

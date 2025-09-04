@@ -211,17 +211,7 @@ class _PlanetsListScreenState extends ConsumerState<PlanetsListScreen> {
                                         backgroundImage: AssetImage(assetPath),
                                       );
                                     }
-                                    // Si la imagen no existe en la carpeta de assets se utiliza la URL de la imagen
-                                    else if (p.imageUrl != null && p.imageUrl!.isNotEmpty) {
-                                      return CircleAvatar(
-                                        radius: 28,
-                                        backgroundColor: Colors.grey.shade300,
-                                        backgroundImage: NetworkImage(p.imageUrl!),
-                                        onBackgroundImageError: (_, __) =>
-                                            const Icon(Icons.broken_image, color: Colors.black45),
-                                      );
-                                    }
-                                    // Si la imagen no existe en la carpeta ni tiene una URL se muestra un icono de imagen rota
+                                    // Si la imagen no existe en la carpeta se muestra un icono de imagen rota
                                     else {
                                       return const CircleAvatar(
                                         radius: 28,

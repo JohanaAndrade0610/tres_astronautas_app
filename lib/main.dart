@@ -8,8 +8,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'src/presentation/screens/home_screen.dart';
+import 'src/utils/url_strategy_stub.dart' if (dart.library.html) 'src/utils/url_strategy_web.dart';
 import 'src/presentation/screens/planets_list_screen.dart';
 import 'src/presentation/screens/planet_detail_screen.dart';
 import 'src/domain/entities/planet.dart';
@@ -17,7 +17,7 @@ import 'src/presentation/screens/not_found_screen.dart';
 import 'src/presentation/screens/favorites_screen.dart';
 
 void main() {
-  setUrlStrategy(PathUrlStrategy());
+  configureUrlStrategy();
   runApp(const ProviderScope(child: App()));
 }
 
